@@ -134,7 +134,7 @@ fzf-history-widget() {
   local selected num key
   setopt localoptions noglobsubst noposixbuiltins pipefail no_aliases 2> /dev/null
   selected=$(fc -rl 1 | perl -ne 'print if !$seen{(/^\s*[0-9]+\s+(.*)/, $1)}++' |
-    FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} $FZF_DEFAULT_OPTS -n2..,.. --tiebreak=index --expect=tab,btab --header='tab:edit enter:execute shift-tab:select' --bind=ctrl-r:toggle-sort $FZF_CTRL_R_OPTS --query=${(qqq)LBUFFER} +m" $(__fzfcmd))
+    FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} $FZF_DEFAULT_OPTS -n2..,.. --tiebreak=index --expect=tab,btab --header='shift-tab:edit enter:execute tab:select' --bind=ctrl-r:toggle-sort $FZF_CTRL_R_OPTS --query=${(qqq)LBUFFER} +m" $(__fzfcmd))
   local ret=$?
   if [ -n "$selected" ]; then
     key="${${(@f)selected}[1]}"
@@ -143,7 +143,7 @@ fzf-history-widget() {
     num=${selected[(w)1]}
     if [ -n "$num" ]; then
       zle vi-fetch-history -n $num
-      if [[ $key = tab ]]; then
+      if [[ $key = btab ]]; then
         zle fzf-edit-command-line
       fi
     fi
@@ -151,7 +151,7 @@ fzf-history-widget() {
 
   zle reset-prompt
 
-  if [[ -n "$num" && $key != btab ]]; then
+  if [[ -n "$num" && $key != tab ]]; then
     zle accept-line
   fi
   return $ret
